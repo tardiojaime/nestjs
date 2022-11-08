@@ -6,6 +6,177 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+// table categoria
+
+model Categoria{
+  id Int @id @default(autoincrement())
+  categoria String
+  peso Int
+  producto Producto[]
+}
+
+// table rol
+model Rol{
+  id Int @id @default(autoincrement())
+  nombre String
+  estado Boolean
+  usuario Usuario[]
+}
+
+// table proveedor
+
+model Proveedor{
+  ci String @id @unique
+  nombre String 
+  apellido String
+  email String
+  telefono String
+  sexo String
+  edad Int
+  entrada_producto Entrada_producto[]
+}
+// table almacen
+model Almacen{
+  id Int @id @default(autoincrement())
+  almacen String
+  latitud String
+  longitud String
+  capacidad Int
+  producto Producto[]
+  entrada_producto Entrada_producto[]
+}
+// table producto
+model Producto{
+  id Int @id @default(autoincrement())
+  almacen Almacen @relation(fields: [id_almacen], references: [id])
+  id_almacen Int
+  categoria Categoria @relation(fields: [id_categoria], references: [id])
+  id_categoria Int
+  nombre String
+  precio Decimal
+  stock Int @default(0)
+  detalle_entrada Detalle_entrada[]
+  detalle_pedido Detalle_pedido[]
+}
+// table usuario
+model Usuario{
+  ci String @id @unique
+  rol Rol @relation(fields: [id_rol], references: [id])
+  id_rol Int
+  usuario String 
+  contrasena String
+  nombre String
+  apellido String
+  email String
+  fecha_nacimiento DateTime
+  telefono String @default("67632212")
+  sexo String @default("M")
+  ubicacion_client Ubicacion_cliente[]
+  conductor Conductor[]
+  entrada_producto Entrada_producto[]
+  pedido Pedido[]
+  tarea Tarea[]
+}
+// table ubicacion cliente
+model Ubicacion_cliente{
+  cliente Usuario @relation(fields: [id_cliente], references: [ci])
+  id_cliente String @unique
+  calle_numero String
+  latitud String
+  longitud String 
+}
+// table 
+model Movil{
+  id Int @id @default(autoincrement())
+  modelo String
+  numero String
+  marca String
+  color String
+  conductor Conductor[]
+}
+model Movilidad{
+  num_placa String @id @unique
+  modelo String
+  marca String
+  color String
+  tipo_movilidad String
+  conductor Conductor[]
+}
+model Conductor{
+  conductor Usuario @relation(fields: [ci], references: [ci])
+  ci String @unique
+  movil Movil @relation(fields: [id_movil], references: [id])
+  id_movil Int
+  movilidad Movilidad @relation(fields: [id_movilidad], references: [num_placa])
+  id_movilidad String @unique
+  anos_experiencia Int
+  tipo_licencia String @default("A")
+  tarea Tarea[]
+}
+// entrada de un producto
+model Entrada_producto{
+  id Int @id @default(autoincrement())
+  usuario Usuario @relation(fields: [id_usuario], references: [ci])
+  id_usuario String
+  proveedor Proveedor @relation(fields: [id_proveedor], references: [ci])
+  id_proveedor String
+  almacen Almacen @relation(fields: [id_almacen], references: [id])
+  id_almacen Int
+  fecha DateTime
+  total Decimal @default(105.25)
+  detalle_entrada Detalle_entrada[]
+}
+//detalle de la entrada
+model Detalle_entrada{
+  id Int @id @default(autoincrement())
+  producto Producto @relation(fields: [id_producto], references: [id])
+  id_producto Int
+  entrada_producto Entrada_producto @relation(fields: [id_entrada], references: [id])
+  id_entrada Int
+  precio Decimal @default(52.15)
+  cantidad Int
+}
+// pedido 
+model Pedido{
+  id Int @id @default(autoincrement())
+  cliente Usuario @relation(fields: [id_cliente], references: [ci])
+  id_cliente String
+  fecha_pedido DateTime
+  fecha_entrega DateTime
+  total Float
+  detalle_pedido Detalle_pedido[]
+  tarea Tarea[]
+}
+// detalle del pedido
+model Detalle_pedido{
+  id Int @id @default(autoincrement())
+  pedido Pedido @relation(fields: [id_pedido], references: [id])
+  id_pedido Int
+  producto Producto @relation(fields: [id_producto], references: [id])
+  id_producto Int
+  cantidad Int
+  precio Decimal @default(25.25)
+}
+// inicio de la tarea 
+model Tarea{
+  id Int @id @default(autoincrement())
+  pedido Pedido @relation(fields: [id_pedido], references: [id])
+  id_pedido Int
+  usuario Usuario @relation(fields: [id_usuario], references: [ci])
+  id_usuario String
+  conductor Conductor @relation(fields: [id_conductor], references: [ci])
+  id_conductor String
+  estado Int @default(1) // 1 iniciado, 2 en proceso, 3 entregado
+  factura Factura[]
+}
+// factura
+model Factura{
+  id Int @id @default(autoincrement())
+  tarea Tarea @relation(fields: [id_tarea], references: [id])
+  id_tarea Int
+  fecha DateTime @default(now())
 }

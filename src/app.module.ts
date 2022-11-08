@@ -8,7 +8,13 @@ import { PedidosController } from './pedidos/pedidos.controller';
 
 @Module({
   imports: [],
-  controllers: [AppController, UsersController, ClienteController, VehiculosController, PedidosController],
+  controllers: [
+    AppController,
+    UsersController,
+    ClienteController,
+    VehiculosController,
+    PedidosController,
+  ],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,0 +1,7 @@
+Consultas 
+https://www.prisma.io/docs/concepts/components/prisma-client/crud#create
+Transacciones 
+https://www.prisma.io/docs/concepts/components/prisma-client/transactions
+
+codigo para pasar a la base de datas
+npx prisma db push
