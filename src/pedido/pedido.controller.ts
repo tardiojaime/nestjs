@@ -1,4 +1,37 @@
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { DtoPedido } from 'src/dto/dto';
+import { PedidoService } from './pedido.service';
 
 @Controller('pedido')
-export class PedidoController {}
+export class PedidoController {
+  constructor(private pedidoservice: PedidoService) {}
+  @Get()
+  obtener() {
+    return this.pedidoservice.obtener();
+  }
+  @Get(':id')
+  obteneruno(@Param() param) {
+    return this.pedidoservice.alldetails(parseInt(param.id));
+  }
+  @Post()
+  registrar(@Body() dto: DtoPedido) {
+    return this.pedidoservice.regispedidos(dto);
+  }
+  @Patch(':id')
+  actualizar(@Param() param, @Body() dto: Prisma.detalle_pedidoUpdateInput) {
+    return this.pedidoservice.actualizar(parseInt(param.id), dto);
+  }
+  @Delete(':id')
+  quitar(@Param() param) {
+    return this.pedidoservice.quitar(parseInt(param.id));
+  }
+}
