@@ -1,11 +1,25 @@
-import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { JwtAuthGuard } from 'src/auth/guards/jwt_auth.guard';
+import { Roles } from 'src/auth/guards/roles.decorador';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { RolService } from './rol.service';
+import { Rol } from 'src/auth/estrategias/rol.enum';
 
 @Controller('rol')
 export class RolController {
   constructor(private rolservice: RolService) {}
-
+  @Roles(Rol.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   obtener() {
     return this.rolservice.obtener();

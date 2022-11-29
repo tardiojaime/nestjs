@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DtoPedido } from 'src/dto/dto';
+import { DtoDetalle } from './actualizar.dto';
 import { PedidoService } from './pedido.service';
 
 @Controller('pedido')
@@ -27,7 +28,7 @@ export class PedidoController {
     return this.pedidoservice.regispedidos(dto);
   }
   @Patch(':id')
-  actualizar(@Param() param, @Body() dto: Prisma.detalle_pedidoUpdateInput) {
+  actualizar(@Param() param, @Body() dto: DtoDetalle) {
     return this.pedidoservice.actualizar(parseInt(param.id), dto);
   }
   @Delete(':id')

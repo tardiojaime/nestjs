@@ -17,7 +17,6 @@ export class PrismaService
         },
       },
     });
-    process.env.TZ = 'America/La_Paz';
   }
   async onModuleInit() {
     await this.$connect();

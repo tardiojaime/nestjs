@@ -4,6 +4,6 @@ import { TareaService } from './tarea.service';
 
 @Module({
   controllers: [TareaController],
-  providers: [TareaService]
+  providers: [TareaService],
 })
 export class TareaModule {}

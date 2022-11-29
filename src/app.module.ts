@@ -7,13 +7,10 @@ import { UsersModule } from './users/users.module';
 import { CategoriaModule } from './categoria/categoria.module';
 import { ClienteModule } from './cliente/cliente.module';
 import { PedidoModule } from './pedido/pedido.module';
-import { ProductoController } from './producto/producto.controller';
 import { ProductoModule } from './producto/producto.module';
-import { RolController } from './rol/rol.controller';
 import { RolModule } from './rol/rol.module';
 import { MovilModule } from './movil/movil.module';
 import { VehiculoModule } from './vehiculo/vehiculo.module';
-import { ProveedorController } from './proveedor/proveedor.controller';
 import { ProveedorModule } from './proveedor/proveedor.module';
 import { TareaModule } from './tarea/tarea.module';
 import { FacturaModule } from './factura/factura.module';
@@ -33,7 +30,7 @@ import { FacturaModule } from './factura/factura.module';
     TareaModule,
     FacturaModule,
   ],
-  controllers: [AppController, ProveedorController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

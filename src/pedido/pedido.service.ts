@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { DtoPedido } from 'src/dto/dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { DtoDetalle } from './actualizar.dto';
 @Injectable()
 export class PedidoService {
   constructor(private prisma: PrismaService) {}
@@ -78,25 +78,17 @@ export class PedidoService {
     }
     return detalless;
   }
-  async actualizar(id: number, dto: Prisma.detalle_pedidoUpdateInput) {
-    try {
-      const dp = await this.prisma.detalle_pedido.update({
-        where: {
-          id: id,
-        },
-        data: {
-          producto: {
-            connect: {
-              id: dto.producto.connect.id,
-            },
-          },
-          cantidad: dto.cantidad,
-        },
-      });
-      return dp;
-    } catch (error) {
-      return error;
-    }
+  async actualizar(id: number, dto: DtoDetalle) {
+    const dp = await this.prisma.detalle_pedido.update({
+      where: {
+        id: id,
+      },
+      data: {
+        id_producto: dto.id,
+        cantidad: dto.cantidad,
+      },
+    });
+    return dp;
   }
   async quitar(id: number) {
     try {

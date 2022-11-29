@@ -193,7 +193,7 @@ model ubicacion_cliente {
 model usuario {
   ci                String             @id @db.VarChar(10)
   id_rol            Int
-  usuario           String             @db.VarChar(150)
+  usuario           String @unique     @db.VarChar(150)
   contrasena        String             @db.VarChar(150)
   nombre            String             @db.VarChar(50)
   apellido          String             @db.VarChar(150)

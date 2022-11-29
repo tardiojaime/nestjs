@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { hash } from 'bcryptjs';
 import { Cliente } from 'src/dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -48,6 +49,7 @@ export class ClienteService {
     return [users, num];
   }
   async registrar(dto: Cliente) {
+    const haspas = await hash(dto.contrasena, 10);
     try {
       const [cliente, ubicacion] = await this.prisma.$transaction([
         this.prisma.usuario.create({
@@ -59,7 +61,7 @@ export class ClienteService {
               },
             },
             usuario: dto.usuario,
-            contrasena: dto.contrasena,
+            contrasena: haspas,
             nombre: dto.nombre,
             apellido: dto.apellido,
             email: dto.email,
@@ -83,6 +85,7 @@ export class ClienteService {
     }
   }
   async actualizar(dto: Cliente) {
+    dto.contrasena = await hash(dto.contrasena, 10);
     try {
       const [cliente, ubicacion] = await this.prisma.$transaction([
         this.prisma.usuario.update({
