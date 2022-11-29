@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Post,
   UploadedFiles,
@@ -7,6 +8,7 @@ import {
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ProductoService } from './producto.service';
 import { diskStorage } from 'multer';
+import { Prisma } from '@prisma/client';
 
 export const storages = {
   storage: diskStorage({
@@ -28,11 +30,14 @@ export class ProductoController {
   constructor(private productoservice: ProductoService) {}
   @Post()
   @UseInterceptors(AnyFilesInterceptor(storages))
-  uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
+  uploadFile(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() dto: Prisma.productoCreateInput,
+  ) {
     const imagenes = [];
-    files.map((file, i) => {
-      imagenes.push(file.filename);
+    const cargar = files.map((file) => {
+      imagenes.push({ img: file.filename });
     });
-    console.log(files[0], imagenes);
+    return this.productoservice.registrar(imagenes, dto);
   }
 }
