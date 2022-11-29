@@ -1,4 +1,4 @@
 export type DtoDetalle = {
-  id: number
-  cantidad: number
-}
+  id: number;
+  cantidad: number;
+};
