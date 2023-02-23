@@ -10,7 +10,11 @@ export class TareaController {
     return this.tareaservice.obtener();
   }
   @Post()
-  registrar(@Body() dto: Prisma.tareaCreateInput) {
+  registrar(@Body() dto) {
     return this.tareaservice.registrar(dto);
+  }
+  @Get('/condutores')
+  condutor() {
+    return this.tareaservice.obtenerConductores();
   }
 }

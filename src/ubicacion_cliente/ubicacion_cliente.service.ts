@@ -6,21 +6,21 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class UbicacionClienteService {
   constructor(private prisma: PrismaService) {}
   async obtener() {
-    const ubicaciones = await this.prisma.ubicacion_cliente.findMany();
+    const ubicaciones = await this.prisma.cliente.findMany();
     return ubicaciones;
   }
-  async obteneruno(id: string) {
-    const ubicacion = await this.prisma.ubicacion_cliente.findUnique({
+  async obteneruno(id: number) {
+    const ubicacion = await this.prisma.cliente.findUnique({
       where: {
-        id_cliente: id,
+        id: id,
       },
     });
     return ubicacion;
   }
   async registrar(dto: UbicacionCliente) {
-    const ubicacion = await this.prisma.ubicacion_cliente.create({
+    const ubicacion = await this.prisma.cliente.create({
       data: {
-        id_cliente: dto.id_cliente,
+        id_usuario: dto.id_cliente,
         calle_numero: dto.calle_numero,
         latitud: dto.latitud,
         longitud: dto.longitud,
@@ -28,11 +28,11 @@ export class UbicacionClienteService {
     });
     return ubicacion;
   }
-  async actualizar(ci: string, dto: UbicacionCliente) {
+  async actualizar(id: number, dto: UbicacionCliente) {
     try {
-      const ubicacion = await this.prisma.ubicacion_cliente.update({
+      const ubicacion = await this.prisma.cliente.update({
         where: {
-          id_cliente: ci,
+          id: id,
         },
         data: {
           calle_numero: dto.calle_numero,
@@ -45,10 +45,10 @@ export class UbicacionClienteService {
       return error;
     }
   }
-  async eliminar(id: string) {
-    const ubicacion = await this.prisma.ubicacion_cliente.delete({
+  async eliminar(id: number) {
+    const ubicacion = await this.prisma.cliente.delete({
       where: {
-        id_cliente: id,
+        id: id,
       },
     });
     return ubicacion;

@@ -8,11 +8,11 @@ import {
   Delete,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { MovilService } from './movil.service';
+import { telefonoService } from './movil.service';
 
 @Controller('movil')
 export class MovilController {
-  constructor(private movilservice: MovilService) {}
+  constructor(private movilservice: telefonoService) {}
   @Get()
   obtener() {
     return this.movilservice.obtener();
@@ -22,11 +22,11 @@ export class MovilController {
     return this.movilservice.obteneruno(parseInt(param.id));
   }
   @Post()
-  registrar(@Body() dto: Prisma.movilCreateInput) {
+  registrar(@Body() dto: Prisma.telefonoCreateInput) {
     return this.movilservice.registrar(dto);
   }
   @Put(':id')
-  actualizar(@Param() Param, @Body() dto: Prisma.movilUpdateInput) {
+  actualizar(@Param() Param, @Body() dto: Prisma.telefonoUpdateInput) {
     return this.movilservice.actualizar(parseInt(Param.id), dto);
   }
   @Delete(':id')

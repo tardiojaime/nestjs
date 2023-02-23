@@ -6,7 +6,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class VehiculoService {
   constructor(private prisma: PrismaService) {}
   async obtener() {
-    const y = await this.prisma.movilidad.findMany();
+    const y = await this.prisma.movilidad.findMany({
+      where: {
+        estado: true,
+      },
+    });
     return y;
   }
   async obteneruno(placa: string) {
@@ -28,6 +32,7 @@ export class VehiculoService {
           tipo_movilidad: dto.tipo_movilidad,
         },
       });
+      return m;
     } catch (error) {
       return error;
     }

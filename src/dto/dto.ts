@@ -1,8 +1,6 @@
-import { Prisma } from '@prisma/client';
-
 export class CategoriaDto {
   categoria: string;
-  peso: number;
+  peso: string;
 }
 export class AlmacenDto {
   almacen: string;
@@ -18,13 +16,13 @@ export class UbicacionCliente {
 }
 export class Cliente {
   ci: string;
-  rol: number;
+  ciA: string;
   usuario: string;
   contrasena: string;
   nombre: string;
   apellido: string;
   email: string;
-  fechanacimiento: Date;
+  fechanacimiento: string;
   telefono: string;
   sexo: string;
   calle_numero: string;
@@ -39,16 +37,17 @@ export class Conductor {
   nombre: string;
   apellido: string;
   email: string;
-  fechanacimiento: Date;
+  fechanacimiento: string;
   telefono: string;
   sexo: string;
-  id_movil: number;
+  id_movil: string;
   id_movilidad: string;
-  anos_experiencia: number;
+  anos_experiencia: string;
   tipo_licencia: string;
+  id?: number;
 }
 export class DtoPedido {
-  id_cliente: string;
+  id_cliente: number;
   fechapedido: string;
   fechaentrega: string;
   total: number;

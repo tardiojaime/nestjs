@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -18,8 +19,9 @@ import { Rol } from 'src/auth/estrategias/rol.enum';
 @Controller('rol')
 export class RolController {
   constructor(private rolservice: RolService) {}
-  @Roles(Rol.Admin)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  // Quitamos el servicio de autenticacion jwt
+  //@Roles(Rol.Admin)
+  //@UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
   obtener() {
     return this.rolservice.obtener();
@@ -35,6 +37,10 @@ export class RolController {
   @Put(':id')
   actualizar(@Param() param, @Body() dto: Prisma.rolUpdateInput) {
     return this.rolservice.actualizar(parseInt(param.id), dto);
+  }
+  @Delete(':id')
+  elimnar(@Param() param) {
+    return this.rolservice.eliminar(parseInt(param.id));
   }
   @Patch()
   debaja(@Body() dto: Prisma.rolUncheckedCreateInput) {

@@ -13,6 +13,11 @@ export class PedidoService {
       return error;
     }
   }
+  async obtenerPedidos() {
+    return this.prisma
+      .$queryRaw`SELECT p.id, u.nombre, u.apellido, p.fecha_pedido, p.fecha_entrega, p.total from pedido p INNER JOIN cliente c on c.id = p.id_cliente INNER JOIN usuario u on u.ci = c.id_usuario WHERE p.id != (SELECT t.id_pedido from tarea t )`;
+  }
+
   async alldetails(id: number) {
     console.log(typeof id);
     const details = await this.prisma.pedido.findUnique({
@@ -47,9 +52,9 @@ export class PedidoService {
   async regispedidos(dto: DtoPedido) {
     const ped = await this.prisma.pedido.create({
       data: {
-        usuario: {
+        cliente: {
           connect: {
-            ci: dto.id_cliente,
+            id: dto.id_cliente,
           },
         },
         fecha_entrega: dto.fechaentrega,

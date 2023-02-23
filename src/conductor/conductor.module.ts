@@ -6,4 +6,4 @@ import { ConductorService } from './conductor.service';
   providers: [ConductorService],
   controllers: [ConductorController],
 })
-export class ClienteModule {}
+export class ConductorModule {}

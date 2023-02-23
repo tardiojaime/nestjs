@@ -5,7 +5,33 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ConductorService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
+  async telefono() {
+    return this.prisma.telefono.findMany();
+    //SELECT * FROM telefono t WHERE t.id != (SELECT t.id from telefono t INNER JOIN conductor c on c.id_telefono= t.id);
+  }
+  async Vehiculo() {
+    return this.prisma.movilidad.findMany();
+  }
+
+  async obtenerQ() {
+    try {
+      const conduc = await this.prisma
+        .$queryRaw`SELECT u.ci, u.usuario, u.nombre, u.apellido, u.email, u.fecha_nacimiento, u.telefono, u.sexo, c.anos_experiencia, c.tipo_licencia, t.modelo, t.marca as 'marcat', m.marca, m.modelo as 'modeloV' from  usuario u INNER JOIN conductor c on c.id_usuario= u.ci INNER JOIN movilidad m ON m.num_placa=c.id_movilidad INNER JOIN telefono t on t.id = c.id_telefono where u.estado=true`;
+      return conduc;
+    } catch (error) {
+      return { error: 'error' };
+    }
+  }
+  async obtenerUno(ci: string) {
+    try {
+      const conduc = await this.prisma
+        .$queryRaw`SELECT u.ci, u.usuario,u.contrasena, u.nombre, u.apellido, u.email, u.fecha_nacimiento, u.telefono, u.sexo, c.anos_experiencia, c.id_telefono, c.id_movilidad, c.anos_experiencia, c.tipo_licencia, c.id from  usuario u INNER JOIN conductor c on c.id_usuario= u.ci INNER JOIN movilidad m ON m.num_placa=c.id_movilidad INNER JOIN telefono t on t.id = c.id_telefono WHERE u.ci=${ci}`;
+      return conduc[0];
+    } catch (error) {
+      return { error: 'error' };
+    }
+  }
   async obtener() {
     try {
       const c = await this.prisma.usuario.findMany({
@@ -31,7 +57,6 @@ export class ConductorService {
           ci: ci,
         },
         include: {
-          rol: true,
           conductor: true,
         },
       });
@@ -49,7 +74,7 @@ export class ConductorService {
             ci: dto.ci,
             rol: {
               connect: {
-                id: dto.rol,
+                id: 3,
               },
             },
             usuario: dto.usuario,
@@ -69,9 +94,9 @@ export class ConductorService {
                 ci: dto.ci,
               },
             },
-            movil: {
+            telefono: {
               connect: {
-                id: dto.id_movil,
+                id: parseInt(dto.id_movil),
               },
             },
             movilidad: {
@@ -79,7 +104,7 @@ export class ConductorService {
                 num_placa: dto.id_movilidad,
               },
             },
-            anos_experiencia: dto.anos_experiencia,
+            anos_experiencia: parseInt(dto.anos_experiencia),
             tipo_licencia: dto.tipo_licencia,
           },
         }),
@@ -89,21 +114,16 @@ export class ConductorService {
       return { error: 'error' };
     }
   }
-  async actualizar(dto: Conductor) {
+  async actualizar(ci: string, dto: Conductor) {
     try {
       dto.contrasena = await hash(dto.contrasena, 10);
       const [usuario, conductor] = await this.prisma.$transaction([
         this.prisma.usuario.update({
           where: {
-            ci: dto.ci,
+            ci: ci,
           },
           data: {
             ci: dto.ci,
-            rol: {
-              connect: {
-                id: dto.rol,
-              },
-            },
             usuario: dto.usuario,
             contrasena: dto.contrasena,
             nombre: dto.nombre,
@@ -116,12 +136,12 @@ export class ConductorService {
         }),
         this.prisma.conductor.update({
           where: {
-            ci: dto.ci,
+            id: dto.id,
           },
           data: {
-            id_movil: dto.id_movil,
+            id_telefono: parseInt(dto.id_movil),
             id_movilidad: dto.id_movilidad,
-            anos_experiencia: dto.anos_experiencia,
+            anos_experiencia: parseInt(dto.anos_experiencia),
             tipo_licencia: dto.tipo_licencia,
           },
         }),
@@ -131,17 +151,15 @@ export class ConductorService {
       return { error: 'error' };
     }
   }
-  async eliminar(id: string) {
+  async eliminar(ci: string) {
     try {
       const cliente = await this.prisma.$transaction([
-        this.prisma.conductor.delete({
+        this.prisma.usuario.update({
           where: {
-            ci: id,
+            ci: ci,
           },
-        }),
-        this.prisma.usuario.delete({
-          where: {
-            ci: id,
+          data: {
+            estado: false,
           },
         }),
       ]);

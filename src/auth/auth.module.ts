@@ -12,7 +12,7 @@ import { Roles } from './guards/roles.decorador';
     PassportModule,
     JwtModule.register({
       secret: env.JWT_SECRET,
-      signOptions: { expiresIn: '28800s' },
+      signOptions: { expiresIn: '100s' },
     }),
   ],
   controllers: [AuthController],

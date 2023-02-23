@@ -13,10 +13,11 @@ export class PrismaService
     super({
       datasources: {
         db: {
-          url: 'mysql://root:@localhost:3306/gestion_entrega?schema=public',
+          url: process.env.DATABASE_URL,
         },
       },
     });
+    //console.log(process.env.DATABASE_URL);
   }
   async onModuleInit() {
     await this.$connect();

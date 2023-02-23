@@ -10,10 +10,6 @@ export class AuthController {
     return this.authservice.signin(dto);
   }
   // incribirse
-  @Post('/signup')
-  singup() {
-    this.authservice.signup();
-  }
   @Post('/logaut')
   logaut() {
     this.authservice.logout();

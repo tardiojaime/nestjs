@@ -15,22 +15,26 @@ export class ClienteController {
   constructor(private clienteservice: ClienteService) {}
   @Get()
   obtener() {
+    return this.clienteservice.query();
+  }
+  @Get('/object')
+  query() {
     return this.clienteservice.obtener();
   }
-  @Get('/query')
-  query() {
-    return this.clienteservice.query();
+  @Get('/:id')
+  onteneruno(@Param() param) {
+    return this.clienteservice.obtenerUnoQ(param.id);
   }
   @Post()
   registrar(@Body() dto: Cliente) {
     return this.clienteservice.registrar(dto);
   }
-  @Put()
-  actuilizar(@Body() dto: Cliente) {
-    return this.clienteservice.actualizar(dto);
+  @Put('/:ci')
+  actuilizar(@Param() param, @Body() dto: Cliente) {
+    return this.clienteservice.actualizar(param.ci, dto);
   }
-  @Delete(':id')
+  @Delete('/:ci')
   eliminar(@Param() param) {
-    return this.clienteservice.eliminar(param.id);
+    return this.clienteservice.eliminar(param.ci);
   }
 }

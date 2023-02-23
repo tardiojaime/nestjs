@@ -26,6 +26,7 @@ export class ProveedorService {
     }
   }
   async registrar(dto: Prisma.proveedorCreateInput) {
+    const edad = parseInt(dto.edad + '');
     try {
       const p = await this.prisma.proveedor.create({
         data: {
@@ -35,7 +36,7 @@ export class ProveedorService {
           email: dto.email,
           telefono: dto.telefono,
           sexo: dto.sexo,
-          edad: dto.edad,
+          edad: edad,
         },
       });
       return p;
@@ -44,6 +45,7 @@ export class ProveedorService {
     }
   }
   async actualizar(ci: string, dto: Prisma.proveedorUpdateInput) {
+    const edad = parseInt(dto.edad + '');
     try {
       const p = await this.prisma.proveedor.update({
         where: {
@@ -56,7 +58,7 @@ export class ProveedorService {
           email: dto.email,
           telefono: dto.telefono,
           sexo: dto.sexo,
-          edad: dto.edad,
+          edad: edad,
         },
       });
       return p;

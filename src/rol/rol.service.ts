@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RolService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async obtener() {
     const rols = await this.prisma.rol.findMany();
@@ -33,6 +33,7 @@ export class RolService {
       },
       data: {
         nombre: dto.nombre,
+        estado: dto.estado,
       },
     });
     return updaterol;
@@ -43,7 +44,15 @@ export class RolService {
         id: dto.id,
       },
       data: {
-        estado: dto.estado,
+        estado: false,
+      },
+    });
+    return baja;
+  }
+  async eliminar(id: number) {
+    const baja = await this.prisma.rol.delete({
+      where: {
+        id: id,
       },
     });
     return baja;

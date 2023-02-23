@@ -12,8 +12,8 @@ model almacen {
   almacen          String             @db.VarChar(50)
   latitud          String             @db.VarChar(150)
   longitud         String             @db.VarChar(150)
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
   capacidad        Int
+  createAt         DateTime?          @db.DateTime(0)
   entrada_producto entrada_producto[]
   producto         producto[]
 }
@@ -22,7 +22,7 @@ model categoria {
   id        Int        @id @default(autoincrement())
   categoria String     @db.VarChar(50)
   peso      Int
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
+  createAt  DateTime?  @db.DateTime(0)
   producto  producto[]
 }
 
@@ -32,7 +32,7 @@ model detalle_entrada {
   id_entrada       Int
   precio           Decimal          @db.Decimal(11, 2)
   cantidad         Int
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
+  createAt         DateTime?        @db.DateTime(0)
   producto         producto         @relation(fields: [id_producto], references: [id], onUpdate: Restrict, map: "detalle_entrada_ibfk_1")
   entrada_producto entrada_producto @relation(fields: [id_entrada], references: [id], onUpdate: Restrict, map: "detalle_entrada_ibfk_2")
 
@@ -41,14 +41,14 @@ model detalle_entrada {
 }
 
 model detalle_pedido {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   id_pedido   Int
   id_producto Int
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
-  cantidad    Float    @db.Float
-  precio      Decimal  @db.Decimal(10, 2)
-  pedido      pedido   @relation(fields: [id_pedido], references: [id], onUpdate: Restrict, map: "detalle_pedido_ibfk_1")
-  producto    producto @relation(fields: [id_producto], references: [id], onUpdate: Restrict, map: "detalle_pedido_ibfk_2")
+  cantidad    Float     @db.Float
+  precio      Decimal   @db.Decimal(10, 2)
+  createAt    DateTime? @db.DateTime(0)
+  pedido      pedido    @relation(fields: [id_pedido], references: [id], onUpdate: Restrict, map: "detalle_pedido_ibfk_1")
+  producto    producto  @relation(fields: [id_producto], references: [id], onUpdate: Restrict, map: "detalle_pedido_ibfk_2")
 
   @@index([id_pedido], map: "id_pedido")
   @@index([id_producto], map: "id_producto")
@@ -59,8 +59,8 @@ model entrada_producto {
   id_usuario      String            @db.VarChar(10)
   id_proveedor    String            @db.VarChar(10)
   id_almacen      Int
-  createAt        DateTime?         @default(now()) @db.DateTime(0)
   total           Decimal           @db.Decimal(11, 2)
+  createAt        DateTime?         @db.DateTime(0)
   almacen         almacen           @relation(fields: [id_almacen], references: [id], onUpdate: Restrict, map: "entrada_producto_ibfk_2")
   usuario         usuario           @relation(fields: [id_usuario], references: [ci], onUpdate: Restrict, map: "entrada_producto_ibfk_3")
   proveedor       proveedor         @relation(fields: [id_proveedor], references: [ci], onUpdate: Restrict, map: "entrada_producto_ibfk_4")
@@ -74,21 +74,10 @@ model entrada_producto {
 model factura {
   id       Int       @id @default(autoincrement())
   id_tarea Int
-  createAt    DateTime? @default(now()) @db.DateTime(0)
+  createAt DateTime? @db.DateTime(0)
   tarea    tarea     @relation(fields: [id_tarea], references: [id], onUpdate: Restrict, map: "factura_ibfk_1")
 
   @@index([id_tarea], map: "id_tarea")
-}
-
-model movil {
-  id        Int         @id @default(autoincrement())
-  modelo    String      @db.VarChar(50)
-  numero    String      @db.VarChar(8)
-  marca     String      @db.VarChar(150)
-  color     String      @db.VarChar(50)
-  estado    Boolean?    @default(true)
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
-  conductor conductor[]
 }
 
 model movilidad {
@@ -98,17 +87,17 @@ model movilidad {
   color          String      @db.VarChar(30)
   tipo_movilidad String      @db.VarChar(50)
   estado         Boolean?    @default(true)
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
+  createAt       DateTime?   @db.DateTime(0)
   conductor      conductor[]
 }
 
 model pedido {
   id             Int              @id @default(autoincrement())
-  id_cliente     String           @db.VarChar(10)
-  fecha_pedido   DateTime?        @default(now()) @db.DateTime(0)
+  id_cliente     Int
+  fecha_pedido   DateTime?        @db.DateTime(0)
   fecha_entrega  String
   total          Float            @db.Float
-  usuario        usuario          @relation(fields: [id_cliente], references: [ci], onUpdate: Restrict, map: "pedido_ibfk_2")
+  cliente        cliente          @relation(fields: [id_cliente], references: [id], onUpdate: Restrict, map: "pedido_ibfk_1")
   detalle_pedido detalle_pedido[]
   tarea          tarea[]
 
@@ -119,13 +108,13 @@ model producto {
   id              Int               @id @default(autoincrement())
   id_almacen      Int
   id_categoria    Int
-  imagenes        Json?    
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
   nombre          String            @db.VarChar(50)
   precio          Decimal           @db.Decimal(10, 2)
   stock           Int
   marca           String            @db.VarChar(150)
   estado          Boolean?          @default(true)
+  imagenes        String?           @db.VarChar(300)
+  createAt        DateTime?         @db.DateTime(0)
   almacen         almacen           @relation(fields: [id_almacen], references: [id], onUpdate: Restrict, map: "producto_ibfk_1")
   categoria       categoria         @relation(fields: [id_categoria], references: [id], onUpdate: Restrict, map: "producto_ibfk_3")
   detalle_entrada detalle_entrada[]
@@ -142,30 +131,30 @@ model proveedor {
   email            String             @db.VarChar(60)
   telefono         String             @db.VarChar(8)
   sexo             String             @db.Char(2)
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
   edad             Int
   estado           Boolean?           @default(true)
+  createAt         DateTime?          @db.DateTime(0)
   entrada_producto entrada_producto[]
 }
 
 model rol {
-  id      Int       @id @default(autoincrement())
-  nombre  String    @db.VarChar(50)
-  estado  Boolean?  @default(true)
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
-  usuario usuario[]
+  id       Int       @id @default(autoincrement())
+  nombre   String    @db.VarChar(50)
+  estado   Boolean?  @default(true)
+  createAt DateTime? @db.DateTime(0)
+  usuario  usuario[]
 }
 
 model tarea {
   id           Int       @id @default(autoincrement())
   id_pedido    Int
   id_usuario   String    @db.VarChar(10)
-  id_conductor String    @db.VarChar(10)
+  id_conductor Int
   estado       Boolean?  @default(false)
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
+  createAt     DateTime? @db.DateTime(0)
   pedido       pedido    @relation(fields: [id_pedido], references: [id], onUpdate: Restrict, map: "tarea_ibfk_1")
   usuario      usuario   @relation(fields: [id_usuario], references: [ci], onUpdate: Restrict, map: "tarea_ibfk_4")
-  conductor    conductor @relation(fields: [id_conductor], references: [ci], onUpdate: Restrict, map: "tarea_ibfk_5")
+  conductor    conductor @relation(fields: [id_conductor], references: [id], onUpdate: Restrict, map: "tarea_ibfk_5")
   factura      factura[]
 
   @@index([id_pedido], map: "id_pedido")
@@ -175,51 +164,63 @@ model tarea {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model conductor {
-  ci               String    @id @db.VarChar(10)
-  id_movil         Int
+  id               Int       @id @default(autoincrement())
+  id_usuario       String    @db.VarChar(10)
+  id_telefono      Int
   id_movilidad     String    @db.VarChar(10)
   anos_experiencia Int
   tipo_licencia    String    @db.Char(1)
-  movil            movil     @relation(fields: [id_movil], references: [id], onUpdate: Restrict, map: "conductor_ibfk_1")
-  usuario          usuario   @relation(fields: [ci], references: [ci], onUpdate: Restrict, map: "conductor_ibfk_3")
+  telefono         telefono  @relation(fields: [id_telefono], references: [id], onUpdate: Restrict, map: "conductor_ibfk_1")
+  usuario          usuario   @relation(fields: [id_usuario], references: [ci], onUpdate: Restrict, map: "conductor_ibfk_3")
   movilidad        movilidad @relation(fields: [id_movilidad], references: [num_placa], onUpdate: Restrict, map: "conductor_ibfk_4")
   tarea            tarea[]
 
-  @@index([ci], map: "ci")
-  @@index([id_movil], map: "id_movil")
+  @@index([id_usuario], map: "ci")
+  @@index([id_telefono], map: "id_movil")
   @@index([id_movilidad], map: "id_movilidad")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model ubicacion_cliente {
-  id_cliente   String  @id @db.VarChar(10)
-  calle_numero String  @db.VarChar(150)
-  latitud      String  @db.VarChar(50)
-  longitud     String  @db.VarChar(50)
-  usuario      usuario @relation(fields: [id_cliente], references: [ci], onUpdate: Restrict, map: "ubicacion_cliente_ibfk_1")
+model cliente {
+  id           Int      @id @default(autoincrement())
+  id_usuario   String   @db.VarChar(10)
+  calle_numero String   @db.VarChar(150)
+  latitud      String   @db.VarChar(50)
+  longitud     String   @db.VarChar(50)
+  usuario      usuario  @relation(fields: [id_usuario], references: [ci], onUpdate: Restrict, map: "cliente_ibfk_1")
+  pedido       pedido[]
 
-  @@index([id_cliente], map: "id_cliente")
+  @@index([id_usuario], map: "id_cliente")
 }
 
 model usuario {
-  ci                String             @id @db.VarChar(10)
-  id_rol            Int
-  usuario           String @unique     @db.VarChar(150)
-  contrasena        String             @db.VarChar(150)
-  nombre            String             @db.VarChar(50)
-  apellido          String             @db.VarChar(150)
-  email             String             @db.VarChar(150)
-  fecha_nacimiento  DateTime           @db.Date
-  createAt         DateTime?        @default(now()) @db.DateTime(0)
-  telefono          String             @db.VarChar(8)
-  sexo              String             @db.Char(1)
-  estado            Boolean?           @default(true)
-  rol               rol                @relation(fields: [id_rol], references: [id], onUpdate: Restrict, map: "usuario_ibfk_1")
-  conductor         conductor?
-  entrada_producto  entrada_producto[]
-  pedido            pedido[]
-  tarea             tarea[]
-  ubicacion_cliente ubicacion_cliente?
+  ci               String             @id @db.VarChar(10)
+  id_rol           Int
+  usuario          String             @db.VarChar(150)
+  contrasena       String             @db.VarChar(150)
+  nombre           String             @db.VarChar(50)
+  apellido         String             @db.VarChar(150)
+  email            String             @db.VarChar(150)
+  fecha_nacimiento String             @db.VarChar(30)
+  telefono         String             @db.VarChar(8)
+  sexo             String             @db.Char(1)
+  estado           Boolean?           @default(true)
+  createAt         DateTime?          @db.DateTime(0)
+  rol              rol                @relation(fields: [id_rol], references: [id], onUpdate: Restrict, map: "usuario_ibfk_1")
+  cliente          cliente[]
+  conductor        conductor[]
+  entrada_producto entrada_producto[]
+  tarea            tarea[]
 
   @@index([id_rol], map: "id_rol")
+}
+
+model telefono {
+  id        Int         @id @default(autoincrement())
+  modelo    String      @db.VarChar(50)
+  numero    String      @db.VarChar(8)
+  marca     String      @db.VarChar(150)
+  color     String      @db.VarChar(50)
+  estado    Boolean?    @default(true)
+  createAt  DateTime?   @db.DateTime(0)
+  conductor conductor[]
 }

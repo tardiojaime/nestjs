@@ -1,14 +1,20 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
+  Res,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { ProductoService } from './producto.service';
 import { diskStorage } from 'multer';
 import { Prisma } from '@prisma/client';
+import { of } from 'rxjs';
+import { join } from 'path';
+import { UploadedFile } from '@nestjs/common/decorators';
 
 export const storages = {
   storage: diskStorage({
@@ -26,9 +32,9 @@ export const storages = {
 
 @Controller('producto')
 export class ProductoController {
-  private imagenes = [];
   constructor(private productoservice: ProductoService) {}
-  @Post()
+  /* de tipo estructura de JsonArray */
+  @Post('/varios')
   @UseInterceptors(AnyFilesInterceptor(storages))
   uploadFile(
     @UploadedFiles() files: Array<Express.Multer.File>,
@@ -38,6 +44,28 @@ export class ProductoController {
     const cargar = files.map((file) => {
       imagenes.push({ img: file.filename });
     });
-    return this.productoservice.registrar(imagenes, dto);
+    return this.productoservice.registrarImgs(imagenes, dto);
+  }
+  @Get()
+  obtener() {
+    return this.productoservice.obtener();
+  }
+  @Get('/:category')
+  ObtenerporCate(@Param() param) {
+    return this.productoservice.obtenerinformacion(param.category);
+  }
+  @Get('/images/:name')
+  oneimage(@Param() param, @Res() res) {
+    console.log(param.name);
+    return of(
+      res.sendFile(join(process.cwd(), 'public/productos/' + param.name)),
+    );
   }
 }
+export const renameImage = (req, file, callback) => {
+  const name = file.originalname.split('.')[0];
+  const filename = file.originalname;
+  const rand = Date.now() + '-' + Math.round(Math.random());
+  callback(null, `${name}${rand}${filename}`);
+  console.log(`${name}${rand}${filename}`);
+};

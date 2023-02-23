@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProductoService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async obtener() {
     try {
       const p = await this.prisma.producto.findMany();
@@ -12,6 +12,16 @@ export class ProductoService {
       return p;
     } catch (error) {
       return error;
+    }
+  }
+  async obtenerinformacion(categoria: string) {
+    if (categoria !== 'All') {
+      const producto = await this.prisma
+        .$queryRaw`SELECT p.id, p.nombre, p.precio, p.stock, p.marca, p.imagenes from producto p INNER JOIN categoria c on c.id = p.id_categoria WHERE c.categoria = ${categoria}`;
+      return producto;
+    } else {
+      const p = await this.prisma.producto.findMany();
+      return p;
     }
   }
   async obteneruno(id: number) {
@@ -26,8 +36,12 @@ export class ProductoService {
       return error;
     }
   }
-  async registrar(imagenes, dto: Prisma.productoCreateInput) {
+  async registrarImg(img, dto: Prisma.productoCreateInput) {
+    return { ms: 'error en el registro del producto' };
+  }
+  async registrarImgs(imagenes, dto: Prisma.productoCreateInput) {
     dto.stock = parseInt(dto.stock + '');
+    const catr = parseInt(dto.categoria + '');
     imagenes = imagenes as Prisma.JsonArray;
     const name = await this.prisma.producto.findMany({
       where: {
@@ -47,10 +61,10 @@ export class ProductoService {
             },
             categoria: {
               connect: {
-                id: 2,
+                id: catr,
               },
             },
-            imagenes: imagenes,
+            imagenes: imagenes[0].img,
             nombre: dto.nombre,
             precio: dto.precio,
             marca: dto.marca,

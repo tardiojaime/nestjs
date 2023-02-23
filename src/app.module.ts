@@ -14,6 +14,8 @@ import { VehiculoModule } from './vehiculo/vehiculo.module';
 import { ProveedorModule } from './proveedor/proveedor.module';
 import { TareaModule } from './tarea/tarea.module';
 import { FacturaModule } from './factura/factura.module';
+import { ConductorModule } from './conductor/conductor.module';
+import { AlmacenModule } from './almacen/almacen.module';
 @Module({
   imports: [
     PrismaModule,
@@ -29,6 +31,8 @@ import { FacturaModule } from './factura/factura.module';
     ProveedorModule,
     TareaModule,
     FacturaModule,
+    ConductorModule,
+    AlmacenModule,
   ],
   controllers: [AppController],
   providers: [AppService],

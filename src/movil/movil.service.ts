@@ -3,22 +3,26 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
-export class MovilService {
+export class telefonoService {
   constructor(private prisma: PrismaService) {}
   async obtener() {
-    const m = await this.prisma.movil.findMany();
+    const m = await this.prisma.telefono.findMany({
+      where: {
+        estado: true,
+      },
+    });
     return m;
   }
   async obteneruno(id: number) {
-    const m = await this.prisma.movil.findUnique({
+    const m = await this.prisma.telefono.findUnique({
       where: {
         id: id,
       },
     });
     return m;
   }
-  async registrar(dto: Prisma.movilCreateInput) {
-    const m = await this.prisma.movil.create({
+  async registrar(dto: Prisma.telefonoCreateInput) {
+    const m = await this.prisma.telefono.create({
       data: {
         modelo: dto.modelo,
         numero: dto.numero,
@@ -28,8 +32,8 @@ export class MovilService {
     });
     return m;
   }
-  async actualizar(id: number, dto: Prisma.movilUpdateInput) {
-    const m = await this.prisma.movil.update({
+  async actualizar(id: number, dto: Prisma.telefonoUpdateInput) {
+    const m = await this.prisma.telefono.update({
       where: {
         id: id,
       },
@@ -43,7 +47,7 @@ export class MovilService {
     return m;
   }
   async debaja(id: number) {
-    const m = await this.prisma.movil.update({
+    const m = await this.prisma.telefono.update({
       where: {
         id: id,
       },

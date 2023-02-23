@@ -4,8 +4,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TareaService {
-  constructor(private prisma: PrismaService) {}
-
+  constructor(private prisma: PrismaService) { }
+  async obtenerConductores() {
+    const c = this.prisma
+      .$queryRaw`SELECT c.id, u.nombre, u.apellido  from usuario u INNER JOIN conductor c ON c.id_usuario=u.ci`;
+    return c;
+  }
   async obtener() {
     try {
       const t = await this.prisma.tarea.findMany({
@@ -45,30 +49,30 @@ export class TareaService {
       return error;
     }
   }
-  async registrar(dto: Prisma.tareaCreateInput) {
+  async registrar(dto) {
     try {
       const t = await this.prisma.tarea.create({
         data: {
           pedido: {
             connect: {
-              id: dto.pedido.connect.id,
+              id: dto.p_id,
             },
           },
           usuario: {
             connect: {
-              ci: dto.usuario.connect.ci,
+              ci: dto.u_ci,
             },
           },
           conductor: {
             connect: {
-              ci: dto.conductor.connect.ci,
+              id: dto.c_id,
             },
           },
         },
       });
       return t;
     } catch (error) {
-      return error;
+      return { error: 'errror' };
     }
   }
   async actualizar(id: number, dto: Prisma.tareaUpdateInput) {
@@ -85,7 +89,7 @@ export class TareaService {
           },
           conductor: {
             connect: {
-              ci: dto.conductor.connect.ci,
+              id: dto.conductor.connect.id,
             },
           },
         },

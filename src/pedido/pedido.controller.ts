@@ -7,7 +7,6 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { DtoPedido } from 'src/dto/dto';
 import { DtoDetalle } from './actualizar.dto';
 import { PedidoService } from './pedido.service';
@@ -17,7 +16,7 @@ export class PedidoController {
   constructor(private pedidoservice: PedidoService) {}
   @Get()
   obtener() {
-    return this.pedidoservice.obtener();
+    return this.pedidoservice.obtenerPedidos();
   }
   @Get(':id')
   obteneruno(@Param() param) {

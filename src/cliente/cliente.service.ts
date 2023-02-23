@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { hash } from 'bcryptjs';
 import { Cliente } from 'src/dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ClienteService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async obtener() {
     try {
       const cliente = await this.prisma.usuario.findMany({
@@ -15,14 +16,24 @@ export class ClienteService {
           },
         },
         include: {
-          rol: true,
-          ubicacion_cliente: true,
+          cliente: {
+            select: {
+              calle_numero: true,
+              longitud: true,
+              latitud: true,
+            },
+          },
         },
       });
       return cliente;
     } catch (error) {
       return error;
     }
+  }
+  async obtenerUnoQ(ci: string) {
+    const clientes = await this.prisma
+      .$queryRaw`SELECT u.ci,u.usuario, u.nombre, u.contrasena, u.apellido, u.email, u.fecha_nacimiento, u.telefono, u.sexo, c.calle_numero, c.latitud, c.longitud FROM usuario u INNER JOIN cliente c ON c.id_usuario = u.ci WHERE u.ci = ${ci}`;
+    return clientes;
   }
   async obteneruno(ci: string) {
     try {
@@ -31,8 +42,8 @@ export class ClienteService {
           ci: ci,
         },
         include: {
-          rol: true,
-          ubicacion_cliente: true,
+          //rol: true,
+          cliente: true,
         },
       });
       return cliente;
@@ -41,23 +52,19 @@ export class ClienteService {
     }
   }
   async query() {
-    const [users, num] = await this.prisma.$transaction([
-      this.prisma
-        .$queryRaw`SELECT * FROM usuario u INNER JOIN rol r on u.id_rol=r.id INNER JOIN ubicacion_cliente c on c.id_cliente=u.ci where r.nombre='cliente'`,
-      this.prisma.$queryRaw`SELECT u.nombre from usuario u`,
-    ]);
-    return [users, num];
+    const clientes = await this.prisma.$queryRaw`SELECT * FROM list_cliente`;
+    return clientes;
   }
   async registrar(dto: Cliente) {
     const haspas = await hash(dto.contrasena, 10);
     try {
-      const [cliente, ubicacion] = await this.prisma.$transaction([
+      const [usuario, cliente] = await this.prisma.$transaction([
         this.prisma.usuario.create({
           data: {
             ci: dto.ci,
             rol: {
               connect: {
-                id: dto.rol,
+                id: 4,
               },
             },
             usuario: dto.usuario,
@@ -70,35 +77,50 @@ export class ClienteService {
             sexo: dto.sexo,
           },
         }),
-        this.prisma.ubicacion_cliente.create({
+        this.prisma.cliente.create({
           data: {
-            id_cliente: dto.ci,
+            id_usuario: dto.ci,
             calle_numero: dto.calle_numero,
             latitud: dto.latitud,
             longitud: dto.longitud,
           },
         }),
       ]);
-      return [cliente, ubicacion];
+      return [usuario, cliente];
     } catch (error) {
       return { error: 'error' };
     }
   }
-  async actualizar(dto: Cliente) {
+  async actualizar(ci, dto: Cliente) {
     dto.contrasena = await hash(dto.contrasena, 10);
-    try {
+
+    if (dto.contrasena.length < 15) {
       const [cliente, ubicacion] = await this.prisma.$transaction([
         this.prisma.usuario.update({
           where: {
-            ci: dto.ci,
+            ci: ci,
           },
           data: {
-            ci: dto.ci,
-            rol: {
-              connect: {
-                id: dto.rol,
-              },
-            },
+            usuario: dto.usuario,
+            nombre: dto.nombre,
+            apellido: dto.apellido,
+            email: dto.email,
+            fecha_nacimiento: dto.fechanacimiento,
+            telefono: dto.telefono,
+            sexo: dto.sexo,
+          },
+        }),
+        this.prisma
+          .$queryRaw`UPDATE cliente SET calle_numero= ${dto.calle_numero}, latitud=${dto.latitud}, longitud=${dto.longitud} WHERE id_usuario=${ci}`,
+      ]);
+      return [cliente, ubicacion];
+    } else {
+      const [cliente, ubicacion] = await this.prisma.$transaction([
+        this.prisma.usuario.update({
+          where: {
+            ci: ci,
+          },
+          data: {
             usuario: dto.usuario,
             contrasena: dto.contrasena,
             nombre: dto.nombre,
@@ -109,34 +131,31 @@ export class ClienteService {
             sexo: dto.sexo,
           },
         }),
-        this.prisma.ubicacion_cliente.update({
-          where: {
-            id_cliente: dto.ci,
-          },
-          data: {
-            id_cliente: dto.ci,
-            calle_numero: dto.calle_numero,
-            latitud: dto.latitud,
-            longitud: dto.longitud,
-          },
-        }),
+        this.prisma
+          .$queryRaw`UPDATE cliente SET calle_numero= ${dto.calle_numero}, latitud=${dto.latitud}, longitud=${dto.longitud} WHERE id_usuario=${ci}`,
       ]);
       return [cliente, ubicacion];
-    } catch (error) {
-      return { error: 'error' };
     }
   }
-  async eliminar(id: string) {
+  async eliminar(ci: string) {
+    const idc = this.prisma.cliente.findFirst({
+      where: {
+        id_usuario: ci,
+      },
+      select: {
+        id: true,
+      },
+    });
     try {
       const cliente = await this.prisma.$transaction([
-        this.prisma.ubicacion_cliente.delete({
+        this.prisma.cliente.delete({
           where: {
-            id_cliente: id,
+            id: (await idc).id,
           },
         }),
         this.prisma.usuario.delete({
           where: {
-            ci: id,
+            ci: ci,
           },
         }),
       ]);

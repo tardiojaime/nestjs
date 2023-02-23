@@ -13,7 +13,7 @@ export class CategoriaService {
     const categoria = await this.prisma.categoria.create({
       data: {
         categoria: dto.categoria,
-        peso: dto.peso,
+        peso: parseInt(dto.peso),
       },
     });
     return categoria;
@@ -34,7 +34,7 @@ export class CategoriaService {
         },
         data: {
           categoria: dto.categoria,
-          peso: dto.peso,
+          peso: parseInt(dto.peso),
         },
       });
       return categoria;
